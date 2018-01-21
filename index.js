@@ -5,70 +5,79 @@ import cors from '@koa/cors';
 import { graphqlKoa, graphiqlKoa } from 'apollo-server-koa';
 import { makeExecutableSchema } from 'graphql-tools';
 import Sequelize from 'sequelize';
+
 const sequelize = new Sequelize('schanzentisch', 'schanze', 'tisch', {
-    host: 'localhost',
-    dialect:'sqlite',
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-    },
-    storage: './database.sqlite', 
-    operatorsAliases: false
+  host: 'localhost',
+  dialect: 'sqlite',
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
+  storage: './database.sqlite',
+  operatorsAliases: false,
 });
 
 const Places = sequelize.define('places', {
-    picture: Sequelize.STRING,
-    name: Sequelize.STRING,
-    priceRange: Sequelize.STRING,
-    rating: Sequelize.TINYINT,
+  picture: Sequelize.STRING,
+  name: Sequelize.STRING,
+  priceRange: Sequelize.STRING,
+  rating: Sequelize.TINYINT,
 });
 
-sequelize.sync()
-    .then(() => Places.findOrCreate({
-        where: {
-            name: "Asia uniqe",
-        },
-        defaults: {
-            picture:'https://media-cdn.tripadvisor.com/media/photo-s/11/cb/0f/f5/karte.jpg',
-            priceRange:'very cheap',
-            rating:3,
-            name: "Asia uniqe",
-        }
+sequelize
+  .sync()
+  .then(() =>
+    Places.findOrCreate({
+      where: {
+        name: 'Asia uniqe',
+      },
+      defaults: {
+        picture:
+          'https://media-cdn.tripadvisor.com/media/photo-s/11/cb/0f/f5/karte.jpg',
+        priceRange: 'very cheap',
+        rating: 3,
+        name: 'Asia uniqe',
+      },
     }))
-    .then(() => Places.findOrCreate({
-        where: {
-            name: 'Pamukale',
-        },
-        defaults: {
-            picture:'http://www.hamburg-schmackhaft.de/wp-content/uploads/2016/12/basel-and-mars-restaurant-mittagstisch-test-03.jpg',
-            name: 'Pamukale',
-            priceRange:'cheap',
-            rating:2,
-        }
+  .then(() =>
+    Places.findOrCreate({
+      where: {
+        name: 'Pamukale',
+      },
+      defaults: {
+        picture:
+          'http://www.hamburg-schmackhaft.de/wp-content/uploads/2016/12/basel-and-mars-restaurant-mittagstisch-test-03.jpg',
+        name: 'Pamukale',
+        priceRange: 'cheap',
+        rating: 2,
+      },
     }))
-    .then(() => Places.findOrCreate({
-        where: {
-            name:'Balero',
-        },
-        defaults: {
-            picture:'http://www.el-serratto.de/speisekarte/mittagstisch.jpg',
-            name:'Balero',
-            priceRange: 'pricy',
-            rating:2,
-        }
+  .then(() =>
+    Places.findOrCreate({
+      where: {
+        name: 'Balero',
+      },
+      defaults: {
+        picture: 'http://www.el-serratto.de/speisekarte/mittagstisch.jpg',
+        name: 'Balero',
+        priceRange: 'pricy',
+        rating: 2,
+      },
     }))
-    .then(() => Places.findOrCreate({
-        where: {
-            name: 'erikas eck',
-        },
-        defaults: {
-            picture:'https://media-cdn.tripadvisor.com/media/photo-s/0d/77/c5/1f/speisekarte-an-der-tafel.jpg',
-            name: 'erikas eck',
-            priceRange:"why so expensive?",
-            rating:1,
-        }
+  .then(() =>
+    Places.findOrCreate({
+      where: {
+        name: 'erikas eck',
+      },
+      defaults: {
+        picture:
+          'https://media-cdn.tripadvisor.com/media/photo-s/0d/77/c5/1f/speisekarte-an-der-tafel.jpg',
+        name: 'erikas eck',
+        priceRange: 'why so expensive?',
+        rating: 1,
+      },
     }));
 
 const app = new koa();
@@ -81,14 +90,14 @@ const typeDefs = `
 `;
 
 const resolvers = {
-    Query: { 
-        allPlaces: () => Places.findAll()
-    },
+  Query: {
+    allPlaces: () => Places.findAll(),
+  },
 };
 
-const myGraphQLSchema = makeExecutableSchema({ 
-    typeDefs,
-    resolvers
+const myGraphQLSchema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
 });
 
 // koaBody is needed just for POST.
